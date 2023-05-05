@@ -1,75 +1,77 @@
-// import { useState } from "react";
-
-// export const useData = (fileName) => {
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const [data, setData] = useState({});
-//   const fs = require("fs");
-
-//   const saveData = async (data) => {
-//     try {
-//       setIsLoading(true);
-//       setError(null);
-
-//       fs.writeFile(fileName, data);
-
-//       setIsLoading(false);
-//     } catch (error) {
-//       setIsLoading(false);
-//       setError(error.message);
-//     }
-//   };
-
-//   const getData = async () => {
-//     try {
-//       setData(require(fileName));
-//     } catch (error) {
-//       setIsLoading(false);
-//       setError(error.message);
-//     }
-//   };
-
-//   const updateData = async (newData) => {
-//     try {
-//       setIsLoading(true);
-//       setError(null);
-
-//       console.log("data: ", data);
-//       console.log("new data: ", newData);
-
-//       setIsLoading(false);
-//     } catch (error) {
-//       setIsLoading(false);
-//       setError(error.message);
-//     }
-//   };
-
-//   return { saveData, getData, updateData, isLoading, error, data };
-// };
-
 import { useState } from "react";
 
-export const useLocalStorage = (key, initialValue) => {
-  const [storedValue, setStoredValue] = useState(() => {
+function getRandomID(length) {
+  return Math.floor(length + Math.random() * 1024 * 1024);
+}
+
+export const useData = (key, initialValue, fileData) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.log(error);
+      setError(error);
       return initialValue;
     }
   });
 
-  const setValue = (value) => {
+  const saveData = async (data) => {
     try {
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      setIsLoading(true);
+      setError(null);
+
+      setData(data);
+      window.localStorage.setItem(key, JSON.stringify(data));
+
+      setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      setIsLoading(false);
+      setError(error);
     }
   };
 
-  return [storedValue, setValue];
+  const getData = async () => {
+    try {
+      setIsLoading(true);
+      setData(fileData);
+
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error);
+    }
+  };
+
+  const updateData = async (newData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      console.log("data: ", data);
+
+      saveData({
+        ...data,
+        comments: [
+          ...data.comments,
+          {
+            id: getRandomID(data.comments.length),
+            ...newData,
+            score: 0,
+            createdAt: "today",
+            user: data.currentUser,
+            replies: [],
+          },
+        ],
+      });
+
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error);
+    }
+  };
+
+  return { getData, updateData, isLoading, error, data };
 };

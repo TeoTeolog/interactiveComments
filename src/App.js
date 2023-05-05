@@ -1,22 +1,33 @@
 import "./styles/App.css";
 
 import { CommentList } from "./components/CommentElement";
-import { CommentForm } from "./components/CommentForm";
+import { CommentFormPanel } from "./components/CommentForm";
 import { useData } from "./hooks/useData";
 import { useEffect } from "react";
+import { useRenderCounter } from "./hooks/useRenderCounter";
 
 function App() {
-  // const data = require("./data.json");
-  const { data, getData } = useData("../data.json");
+  const { render } = useRenderCounter("App");
+  const dataFromFile = require("./data.json");
+  const { data, getData, error, updateData } = useData(
+    "myStore",
+    {},
+    dataFromFile
+  );
 
   useEffect(() => {
     getData();
-  }, [getData]);
+    console.log("!!!!!!!!!!!!!>>>>>>>>>", dataFromFile);
+  }, []);
+
+  useEffect(() => {
+    console.log("ERROR:", error);
+  }, [error]);
 
   return (
     <div className="App">
-      <CommentList comments={data.comments} />
-      <CommentForm user={data.currentUser} />
+      <CommentList currentUser={data.currentUser} comments={data.comments} />
+      <CommentFormPanel user={data.currentUser} handleData={updateData} />
     </div>
   );
 }

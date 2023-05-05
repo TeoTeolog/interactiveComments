@@ -1,109 +1,110 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/comment.css";
 
 import replyImg from "../images/icon-reply.svg";
 import { Avatar } from "./Avatar";
 import { Button } from "./Button";
 
-import { useForm } from "react-hook-form";
 import { useRenderCounter } from "../hooks/useRenderCounter";
 
-const ReplyButton = (props) => {
-  return (
-    <button>
-      <img stc={replyImg} alt="r"></img> Reply
-    </button>
-  );
-};
+import { useForm, useController } from "react-hook-form";
 
-const Header = (props) => {
-  const { user, date } = props;
-  return (
-    <div className="header">
-      <div className="info-wrapper">
-        <Avatar img={user.image} />
-        <div className="username">{user.username}</div>
-        <div className="date-created-at">{date}</div>
-      </div>
-      <ReplyButton />
-    </div>
-  );
-};
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-// const Content = (props) => {
-//   const { data } = props;
-//   console.log(props);
-//   return <div className="content">{data.content}</div>;
-// };
+const QuillEditor = (props) => {
+  const { name, control, defaultValue = "" } = props;
+  const {
+    field: { ref, onChange, value },
+  } = useController({
+    name,
+    control,
+    defaultValue,
+    rules: { required: false },
+  });
 
-const ScorePanel = (props) => {
-  const { score } = props;
-  return (
-    <div className="score-panel">
-      <button>+</button>
-      {score}
-      <button>- </button>
-    </div>
-  );
-};
-
-function CommentPanel(props) {
-  const { data } = props;
-  return (
-    <div className="comment-container">
-      <ScorePanel score={data.score} />
-      <div className="main-continer-container">
-        <Header user={data.user} date={data.createdAt}></Header>
-        <div className="content">{data.content}</div>
-      </div>
-    </div>
-  );
-}
-
-export function CommentElement(props) {
-  const { data } = props;
-  return (
-    <div className="field">
-      <CommentPanel data={data} />
-      <ul>
-        {data.replies.map((item) => (
-          <li key={item.id}>
-            <CommentPanel data={item} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-const Input = (props) => {
-  return (
-    <textarea
-      {...props.register}
-      className="input"
-      placeholder="Comment"
-    ></textarea>
-  );
-};
-
-export function CommentForm(props) {
-  const { handleData, target } = props;
-  const { register, handleSubmit } = useForm();
-  const { render } = useRenderCounter("CommentForm");
-
-  const onSubmit = (data) => {
-    console.log(data);
-    if (!!handleData) {
-      handleData(data);
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      // event.preventDefault();
+      // field.onChange(event.target.innerHTML);
     }
   };
 
-  const { user } = props;
   return (
-    <form className="form-section" onSubmit={handleSubmit(onSubmit)}>
-      <Avatar img={user.image} />
-      <Input register={register("commentText")} />
-      <Button lable="SEND" />
+    <ReactQuill
+      ref={ref}
+      onChange={onChange}
+      value={value}
+      modules={{
+        toolbar: false,
+      }}
+      id="input"
+    />
+  );
+};
+
+// const Editor = (props) => {
+//   const { name, control, defaultValue = "" } = props;
+//   const {
+//     field: { ref, onChange, value },
+//   } = useController({
+//     name,
+//     control,
+//     defaultValue,
+//     rules: { required: false },
+//   });
+
+//   const handleKeyPress = (event) => {
+//     if (event.key === "Enter") {
+//       // event.preventDefault();
+//       // field.onChange(event.target.innerHTML);
+//     }
+//   };
+
+//   return (
+//     <div
+//       contentEditable="true"
+//       ref={ref}
+//       onChange={onChange}
+//       dangerouslySetInnerHTML={{ __html: value }}
+//       // onChange={handleChange}
+//       // onKeyPress={handleKeyPress}
+//       // placeholder={props.placeholder}
+
+//       className="input"
+//     ></div>
+//   );
+// };
+
+const CommentForm = (props) => {
+  const { buttonLable, handleData } = props;
+  const { control, handleSubmit, reset } = useForm();
+  const { render } = useRenderCounter("CommentForm");
+
+  const onSubmit = (data) => {
+    data.content = data.content.replace(/(<([^>]+)>)/gi, "");
+    if (!!handleData) {
+      handleData(data);
+      reset();
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <QuillEditor placeholder="Comment" control={control} name="content" />
+      <Button lable={buttonLable} />
     </form>
+  );
+};
+
+export function CommentFormPanel(props) {
+  const { handleData } = props;
+
+  const { user } = props;
+  if (!user) return;
+  return (
+    <div className="form-panel">
+      <Avatar img={user.image} />
+      <CommentForm buttonLable="send" handleData={handleData} />
+    </div>
   );
 }

@@ -39,6 +39,10 @@ li {
     width: 48px;
 }
 
+.main-container {
+    width: 95%;
+}
+
 .comment-container .header {
     display: flex;
     flex-direction: row;
@@ -105,6 +109,7 @@ li {
     font-size: 15px;
     font-weight: 500;
 
+    width: 95%;
     /* color: hsl(212, 24%, 26%); */
     color: hsl(211, 10%, 45%);
 }
@@ -124,8 +129,7 @@ li {
     margin-bottom: 7px;
 }
 
-
-.form-section {
+.form-panel {
     box-sizing: border-box;
     border-radius: 16px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -136,6 +140,18 @@ li {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+
+    height: auto;
+}
+
+.form-panel form {
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+
+    height: auto;
 }
 
 .main-button {
@@ -157,19 +173,34 @@ li {
     background-color: hsl(239, 57%, 85%);
 }
 
-.input {
+#input {
+    border: 0;
+    width: 80%;
+    height: auto;
+}
+
+#input>* {
+    border: 0;
+}
+
+#input>*>* {
+    box-sizing: border-box;
     padding: 10px;
     border: 2px solid hsl(223, 19%, 93%);
     border-radius: 10px;
     background-color: hsl(0, 0%, 100%);
     font-size: 16px;
-    color: #444444;
+    color: hsl(211, 10%, 45%);
     transition: all 0.3s ease;
-    resize: none;
-    width: 70%;
+
+    height: auto;
+    min-height: 80px;
+    max-height: 200px;
+    overflow-y: scroll;
+    overflow-x: inherit;
 }
 
-.input:focus {
+#input>*>*:focus {
     outline: none;
     border: 2px solid hsl(238, 40%, 52%);
 }
