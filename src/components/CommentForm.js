@@ -24,9 +24,9 @@ const QuillEditor = (props) => {
   });
 
   const handleKeyPress = (event) => {
+    console.log("[handleKeyPress] event:", event);
     if (event.key === "Enter") {
-      // event.preventDefault();
-      // field.onChange(event.target.innerHTML);
+      console.log("[handleKeyPress] presserd ENTER: ", event);
     }
   };
 
@@ -37,47 +37,16 @@ const QuillEditor = (props) => {
       value={value}
       modules={{
         toolbar: false,
+        // keyboard: { bindings: { handleKeyPress } },
       }}
+      placeholder={props.placeholder}
       id="input"
     />
   );
 };
 
-// const Editor = (props) => {
-//   const { name, control, defaultValue = "" } = props;
-//   const {
-//     field: { ref, onChange, value },
-//   } = useController({
-//     name,
-//     control,
-//     defaultValue,
-//     rules: { required: false },
-//   });
-
-//   const handleKeyPress = (event) => {
-//     if (event.key === "Enter") {
-//       // event.preventDefault();
-//       // field.onChange(event.target.innerHTML);
-//     }
-//   };
-
-//   return (
-//     <div
-//       contentEditable="true"
-//       ref={ref}
-//       onChange={onChange}
-//       dangerouslySetInnerHTML={{ __html: value }}
-//       // onChange={handleChange}
-//       // onKeyPress={handleKeyPress}
-//       // placeholder={props.placeholder}
-
-//       className="input"
-//     ></div>
-//   );
-// };
-
-const CommentForm = (props) => {
-  const { buttonLable, handleData } = props;
+export const CommentForm = (props) => {
+  const { buttonLable, handleData, content } = props;
   const { control, handleSubmit, reset } = useForm();
   const { render } = useRenderCounter("CommentForm");
 
@@ -90,7 +59,12 @@ const CommentForm = (props) => {
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <QuillEditor placeholder="Comment" control={control} name="content" />
+      <QuillEditor
+        placeholder="Comment"
+        control={control}
+        name="content"
+        defaultValue={!!content && content}
+      />
       <Button lable={buttonLable} />
     </form>
   );
@@ -104,7 +78,7 @@ export function CommentFormPanel(props) {
   return (
     <div className="form-panel">
       <Avatar img={user.image} />
-      <CommentForm buttonLable="send" handleData={handleData} />
+      <CommentForm buttonLable="SEND" handleData={handleData} />
     </div>
   );
 }

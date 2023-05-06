@@ -17,7 +17,6 @@ function App() {
 
   useEffect(() => {
     getData();
-    console.log("!!!!!!!!!!!!!>>>>>>>>>", dataFromFile);
   }, []);
 
   useEffect(() => {

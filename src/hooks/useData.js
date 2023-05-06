@@ -49,8 +49,6 @@ export const useData = (key, initialValue, fileData) => {
       setIsLoading(true);
       setError(null);
 
-      console.log("data: ", data);
-
       saveData({
         ...data,
         comments: [

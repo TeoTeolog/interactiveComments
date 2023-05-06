@@ -206,6 +206,29 @@ li {
 }
 
 
+.edit-comment form .main-button {
+
+    padding: 10px;
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+
+    border: 0;
+    border-radius: 10px;
+    background-color: hsl(238, 40%, 52%);
+    color: hsl(0, 0%, 100%);
+
+    transition: all 1s;
+
+    height: 40px;
+}
+
+.edit-comment form .main-button:hover {
+    background-color: hsl(239, 57%, 85%);
+}
+
+
+
 .colors {
     background-color: hsl(238, 40%, 52%);
     background-color: hsl(358, 79%, 66%);

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/comment.css";
 
 import replyImg from "../images/icon-reply.svg";
 import editImg from "../images/icon-edit.svg";
 import deleteImg from "../images/icon-delete.svg";
 import { Avatar } from "./Avatar";
+import { CommentForm } from "./CommentForm";
 
 const ReplyButton = (props) => {
   return (
@@ -15,8 +16,12 @@ const ReplyButton = (props) => {
 };
 
 const EditButton = (props) => {
+  const onClick = (event) => {
+    props.onClick(event);
+  };
+
   return (
-    <button>
+    <button onClick={onClick}>
       <img stc={editImg} alt="e"></img> Edit
     </button>
   );
@@ -25,13 +30,13 @@ const EditButton = (props) => {
 const DeleteButton = (props) => {
   return (
     <button>
-      <img stc={editImg} alt="d"></img> Delete
+      <img stc={deleteImg} alt="d"></img> Delete
     </button>
   );
 };
 
 const Header = (props) => {
-  const { user, date, curUser } = props;
+  const { user, date, curUser, editButtonHandler } = props;
   return (
     <div className="header">
       <div className="info-wrapper">
@@ -42,7 +47,7 @@ const Header = (props) => {
       </div>
       {curUser.username == user.username ? (
         <>
-          <EditButton />
+          <EditButton onClick={editButtonHandler} />
           <DeleteButton />
         </>
       ) : (
@@ -51,12 +56,6 @@ const Header = (props) => {
     </div>
   );
 };
-
-// const Content = (props) => {
-//   const { data } = props;
-//   console.log(props);
-//   return <div className="content">{data.content}</div>;
-// };
 
 const ScorePanel = (props) => {
   const { score } = props;
@@ -69,8 +68,8 @@ const ScorePanel = (props) => {
   );
 };
 
-function CommentPanel(props) {
-  const { data, curUser } = props;
+function CommentPanelBase(props) {
+  const { data, curUser, content, editButtonHandler } = props;
   return (
     <div className="comment-container">
       <ScorePanel score={data.score} />
@@ -79,14 +78,53 @@ function CommentPanel(props) {
           curUser={curUser}
           user={data.user}
           date={data.createdAt}
+          editButtonHandler={editButtonHandler}
         ></Header>
-        <div className="content">{data.content}</div>
+        <div className="content">{content}</div>
       </div>
     </div>
   );
 }
 
-export function CommentElement(props) {
+function CommentPanelEdit(props) {
+  const { data, curUser } = props;
+  return (
+    <CommentPanelBase
+      {...props}
+      content={
+        <div className="edit-comment">
+          <CommentForm
+            user={curUser}
+            content={data.content}
+            buttonLable={"UPDATE"}
+          />
+        </div>
+      }
+    />
+  );
+}
+
+function CommentPanelCommon(props) {
+  const { data } = props;
+  return <CommentPanelBase {...props} content={data.content} />;
+}
+
+function CommentPanel(props) {
+  const [isEditNow, setIsEditNow] = useState(false);
+
+  const changeEditState = (event) => {
+    setIsEditNow(!isEditNow);
+  };
+
+  if (isEditNow)
+    return <CommentPanelEdit {...props} editButtonHandler={changeEditState} />;
+  else
+    return (
+      <CommentPanelCommon {...props} editButtonHandler={changeEditState} />
+    );
+}
+
+function CommentElement(props) {
   const { data, curUser } = props;
   return (
     <div className="field">
